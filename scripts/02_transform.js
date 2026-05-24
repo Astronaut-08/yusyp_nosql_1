@@ -21,9 +21,9 @@ db.tracks_raw.aggregate([
             
             artists: {
                 $map: {
-                    input: { $split: ['artists', ';'] },
+                    input: { $split: ['$artists', ';'] },
                     as: 'artist',
-                    in: { $trim: { input: '$$artist'}}
+                    in: { $trim: { input: '$$artist'} }
                 }
             },
 
@@ -49,9 +49,9 @@ db.tracks_raw.aggregate([
             popularity_tier: {
                 $switch: {
                     branches: [
-                        { case: {gte: ['popularity', 70]}, then: 'high' },
-                        { case: {gte: ['popularity', 40]}, then: 'medium' },
-                        { case: {lt: ['popularity', 40]}, then: 'low' }
+                        { case: {gte: ['$popularity', 70]}, then: 'high' },
+                        { case: {gte: ['$popularity', 40]}, then: 'medium' },
+                        { case: {lt: ['$popularity', 40]}, then: 'low' }
                     ],
                     default: 'low'
                 }
@@ -61,7 +61,7 @@ db.tracks_raw.aggregate([
 
     {
         $unset: [
-            'artist_raw', 'duration_ms', 'danceability', 'energy', 'loudness', 'speechiness',
+            'artists_raw', 'duration_ms', 'danceability', 'energy', 'loudness', 'speechiness',
             'acousticness', 'instrumentalness', 'liveness', 'valence',
             'tempo', 'key', 'mode', 'time_signature'
         ]
